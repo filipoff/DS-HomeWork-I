@@ -40,7 +40,7 @@ public:
 	{
 		if (isEmpty())
 		{
-			throw "The stack is empty..."; // error
+			throw "The stack is empty"; // error
 		}
 		return tos->data;
 	}

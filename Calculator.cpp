@@ -18,62 +18,32 @@ void Calculator :: readFile(const char* filename)
 		opCounter++;
 	}
 	in.close();
+	numberOfOperators = opCounter;
 }
-/*
-int Calculator :: findIntFromStr(char* str) const
-{
-int cnt = 0;
-char* startIntPtr = NULL;
-char* endIntPtr = NULL;
-int number = 0;
-while(*str)
-{
-if (isdigit(str[cnt]))
-{
-startIntPtr = str + cnt;
-while (isdigit(str[cnt]))
-{
-cnt++;
-}
-endIntPtr = str + cnt;
-}
-number = atoi(startIntPtr);
-return number;
-}
-}
-*/
 
 bool Calculator :: isOpSymbol(char ch)
 {
 	const char* notOpSymbols = "()- ";
 	return strchr(notOpSymbols,ch) == NULL;
 }
-int Calculator :: getNumberLen(int number) const
-{
-	if (number < 0)
-	{
-		number *= -1;
-	}
-	return (int)log10(number)+1;
-}
 
-double Calculator :: doOpCalc(int x, int y, Oper op)
+double Calculator :: doOpCalc(double x, double y, Oper op)
 {
 	switch(op.operation)
 	{
 	case '+':
-		return x + y;
+		return y + x;
 		break;
 	case '-':
-		return x - y;
+		return y - x;
 		break;
 	case '*':
-		return x * y;
+		return y * x;
 		break;
 	case '/':
-		if ( y != 0)
+		if ( x != 0)
 		{
-			return x / y;
+			return y / x;
 			break;
 		}
 		else throw "error"; // error division by 0
@@ -82,66 +52,64 @@ double Calculator :: doOpCalc(int x, int y, Oper op)
 
 void Calculator :: calculateExpr(const char* expr)
 {
-	int temp;
+	double temp = 0;
+	double result = 0;
+	int opIndex = 0;
+	char* endPtr;
+
 	while(*expr)
 	{
-		if (*expr == ' ')
+		if (isspace(*expr))
 		{
 			expr++;
-			continue;
-		}
-		else if (isdigit(*expr))
-		{
-			temp = atoi(expr);
-			expr += getNumberLen(temp);
-			numbers.push(temp);
-			expr++;
-			continue;
 		}
 
-		else if (*expr == '-' && isdigit(*(expr+1)))
+		else if (isdigit(*expr) || (*expr == '-' && isdigit(*(expr+1))))
 		{
-			temp = atoi(expr);
-			expr += getNumberLen(temp) + 1; // for the minus
+			temp = strtod(expr, &endPtr);
+			expr = endPtr;
 			numbers.push(temp);
-			expr++;
-			continue;
 		}
-		else if (isOpSymbol(*expr))
+
+		// if is '(' push it to the op stack
+		// if its ')' do operations until '(' is found
+		// 
+
+		else
 		{
-			int cnt = 0;
-			bool flag = false;
-			while (cnt < MAX_OPERATORS)
+			while (opIndex < numberOfOperators)
 			{
-				if (opers[cnt].symbol == *expr)
+				if (opers[opIndex].symbol == *expr)
 				{
-					flag = true;
-					operations.push(opers[cnt]);
+					while (true)
+					{
+						if (operations.isEmpty() || opers[opIndex].opCompare(operations.peek()))
+						{
+							operations.push(opers[opIndex]);
+							break;
+						}
+						else 
+						{
+							// TO DO : check if there are two elements in the numb stack
+							numbers.push(doOpCalc(numbers.pop(),numbers.pop(),operations.pop()));
+						}
+					}
 					break;
 				}
 				else
-					cnt++;
+					opIndex++;
 			}
-			if (!flag)
+
+			if (opIndex == numberOfOperators)
 			{
 				throw "error"; // invalid op symbol
 			}
-			while (!operations.isEmpty())
-			{
-				Oper op = operations.peek();
-
-				if (op.priority < opers[cnt].priority)
-					break;
-				else
-				{
-					numbers.push(doOpCalc(numbers.pop(),numbers.pop(),operations.pop()));
-				}
-				operations.push(opers[cnt]);
-
-			}
 			expr++;
-			continue;
+
 		}
-		expr++;
 	}
+	// TO DO op stack must be empty
+	// number stack only one number = the result
+	result = numbers.peek();
+	cout << "Result : " << result << endl;
 }

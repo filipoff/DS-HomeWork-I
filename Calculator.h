@@ -12,9 +12,8 @@ class Calculator
 	Stack <Oper> operations;
 	Oper opers[MAX_OPERATORS];
 	bool isOpSymbol(char c);
-	int getNumberLen(int number) const;
-	int findIntFromStr(char* str) const;
-	double doOpCalc(int x, int y, Oper op);
+	int numberOfOperators;
+	double doOpCalc(double x, double y, Oper op);
 public:
 	void readFile(const char* filename);
 	void calculateExpr(const char* expr);
