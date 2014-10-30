@@ -3,19 +3,31 @@
 using namespace std;
 
 
-int main()
+// NOTE TODO : check for associativity
+// It doesnt check assotiativity of the operators
+// 
+int main(int argc, char *argv[])
 {
+	if ( argc != 3)
+	{
+		cout << "not enough parameters";
+		return 1;
+	}
+
 	Calculator test;
-	test.readFile("op.txt");
-	const char* buff = "5 a -6 b 3";
+
+	const char* filename = argv[1];
+	const char* expression = argv[2];
+
+	test.readFile(filename);
 	try
 	{
-		test.calculateExpr(buff);
+		test.calculateExpr(expression);
 	}
 	catch (char* param)
 	{
 		cout << "ERROR!" << endl;
-		cout << param;
+		cout << param << endl;
 	}
 	return 0;
 }

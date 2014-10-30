@@ -1,3 +1,4 @@
+#pragma once
 using namespace std;
 template <class T>
 
@@ -25,6 +26,9 @@ class Stack
 {
 private:
 	elem <T> *tos;
+
+	Stack(const Stack &other);
+	Stack& operator=(const Stack &other);
 
 public:
 	Stack() : tos(NULL) {}

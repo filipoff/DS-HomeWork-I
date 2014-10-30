@@ -1,30 +1,13 @@
 #pragma once
 
-// left = 0
-// right = 1
-
+// a simple struct used for storing the information of a text file with operator atributes
 struct Oper
 {
 	char symbol, operation;
-	int priority, associativity;
-	Oper() : symbol('0'), operation('0'), priority(0), associativity(0) {}
-	Oper(const char symbol, const char operation, const int priority, const int associativity) : 
-		symbol(symbol), operation(operation), priority(priority), associativity(associativity) {}
-	bool opCompare(const Oper &other)
-	{
-		if (this->priority > other.priority)
-		{
-			return true;
-		}
-		else if (this->priority == other.priority)
-		{
-			if (associativity != other.associativity)
-			{
-			}
-			// error;
-		}
-
-		return false;
-	}
+	int priority, asso;
+	Oper() : symbol('0'), operation('0'), priority(0), asso(0) {}
+	
+	// a function that checks if a given operator has higher priority than some other operator
+	bool HasHigherPriorThan(const Oper &other) const;
 
 };
